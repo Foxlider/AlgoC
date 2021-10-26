@@ -52,6 +52,136 @@ void plot(char *data) {
 
 /* renvoyer un message (*data) au client (client_socket_fd)
  */
+int renvoie_nom(int client_socket_fd, char *data)
+{
+  return renvoie_message(client_socket_fd, data);
+}
+
+int recois_numeros_calcul(int client_socket_fd, char *data)
+{
+  float ans;
+  char code[20];
+  char mode[2];
+  char s_num1[100];
+  char s_num2[100];
+
+  char * ptr = strtok(data, " ");
+  strcpy(code, ptr);
+  printf("A\n");
+  
+  ptr = strtok(NULL, " ");
+  strcpy(mode, ptr);
+  printf("A\n");
+  
+  ptr = strtok(NULL, " ");
+  strcpy(s_num1, ptr);
+  printf("A\n");
+  
+  ptr = strtok(NULL, " ");
+  strcpy(s_num2, ptr);
+  printf("A\n");
+
+  printf("mode : %s\n", mode);
+  printf("code : %s\n", code);
+  printf("n1 : %s\n", s_num1);
+  printf("n2 : %s\n", s_num2);
+  
+  if (strcmp(mode, "+") == 0)
+  { ans = atof(s_num1) + atof(s_num2); }
+  if (strcmp(mode, "-") == 0)
+  { ans = atof(s_num1) - atof(s_num2); }
+  if (strcmp(mode, "*") == 0)
+  { ans = atof(s_num1) * atof(s_num2); }
+  if (strcmp(mode, "/") == 0)
+  { ans = atof(s_num1) / atof(s_num2); }
+
+  printf("RES : %f\n", ans);
+  char c[100]; //size of the number
+  sprintf(c, "%g", ans);
+  return renvoie_message(client_socket_fd, c);
+}
+
+recois_couleurs(int client_socket_fd, char *data)
+{
+  char out[2048];
+  FILE* fichier = NULL;
+
+  //On lit la commande
+  char * ptr = strtok(data, " ");
+  
+  //On lit le nombre de couleurs
+  ptr = strtok(NULL, " ");
+
+  //On lit les couleurs
+  ptr = strtok(NULL, " ");
+  while( ptr != NULL ) 
+  {
+    strcat(out, "#");
+    strcat(out, ptr);
+    strcat(out, ", ");
+    printf( " %s\n", ptr );
+  
+    ptr = strtok(NULL, " ");
+  }
+
+  printf("%s\n", out);
+  fichier = fopen("couleurs.txt", "w+");
+  if(fichier != NULL)
+  {
+    fprintf(fichier, out);
+    fclose(fichier);
+  }
+  else
+  { printf("Impossible d'ouvrir le fichier"); }
+  
+  renvoie_message(client_socket_fd, "Enregistré");
+}
+
+recois_balises(int client_socket_fd, char *data)
+{
+  char out[2048];
+  char i_s[10];
+  FILE* fichier = NULL;
+  int i;
+
+  
+  //On lit la commande
+  char * ptr = strtok(data, " ");
+
+  //On lit le nombre de couleurs
+  ptr = strtok(NULL, " ");
+  //strcpy(nb, ptr);
+
+  //On lit les couleurs
+  ptr = strtok(NULL, " ");
+  i = 0;
+  while( ptr != NULL ) 
+  {
+    i++;
+    sprintf(i_s, "b%d : #", i);
+    strcat(out, i_s);
+    strcat(out, ptr);
+    strcat(out, "\n");
+    printf( " %s\n", ptr );
+  
+    ptr = strtok(NULL, " ");
+  }
+
+
+  //printf("%s\n", out);
+  fichier = fopen("balise.txt", "w+");
+  if(fichier != NULL)
+  {
+    fprintf(fichier, out);
+    fclose(fichier);
+  }
+  else
+  { printf("Impossible d'ouvrir le fichier"); }
+    
+  renvoie_message(client_socket_fd, "Enregistré");
+}
+
+
 int renvoie_message(int client_socket_fd, char *data) {
   int data_size = write (client_socket_fd, (void *) data, strlen(data));
       
@@ -99,15 +229,35 @@ int recois_envoie_message(int socketfd) {
 
   //Si le message commence par le mot: 'message:' 
   if (strcmp(code, "message:") == 0) {
+    char message[100];
+    printf("Reponse (max 1000 caracteres): ");
+    fgets(message, 1024, stdin);
+    strcpy(data, "message: ");
+    strcat(data, message);
+    
     renvoie_message(client_socket_fd, data);
   }
+  if (strcmp(code, "hostname:") == 0) 
+  { renvoie_nom(client_socket_fd, data); }
+
+  if (strcmp(code, "calcul:") == 0)
+  { recois_numeros_calcul(client_socket_fd, data); }
+
+  if (strcmp(code, "couleur:") == 0)
+  { recois_couleurs(client_socket_fd, data); }
+
+  if (strcmp(code, "balise:") == 0)
+  { recois_balises(client_socket_fd, data); }
   else {
-    plot(data);
+    //plot(data);
   }
 
   //fermer le socket 
   close(socketfd);
 }
+
+
+
 
 int main() {
 
