@@ -196,13 +196,10 @@ int envoi_couleurs(int socketfd, char *data)
     if(nb > 30)
     { nb = 0; }
   }
-  printf("A\n");
   //On parse le début de la commande
   strcpy(data, "couleur: ");
-  printf("B\n");
   strcat(data, nb_s);
-
-printf("C\n");
+  
   //On input les couleurs et on les parse
   for (int i = 0; i < nb; i++)
   {

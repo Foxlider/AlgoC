@@ -64,6 +64,8 @@ int recois_numeros_calcul(int client_socket_fd, char *data)
   char mode[2];
   char s_num1[100];
   char s_num2[100];
+  float num1;
+  float num2;
 
   char * ptr = strtok(data, " ");
   strcpy(code, ptr);
@@ -86,18 +88,22 @@ int recois_numeros_calcul(int client_socket_fd, char *data)
   printf("n1 : %s\n", s_num1);
   printf("n2 : %s\n", s_num2);
   
+  num1 = atof(s_num1);
+  num2 = atof(s_num2);
+
   if (strcmp(mode, "+") == 0)
-  { ans = atof(s_num1) + atof(s_num2); }
+  { ans = num1 + num2; }
   if (strcmp(mode, "-") == 0)
-  { ans = atof(s_num1) - atof(s_num2); }
+  { ans = num1 - num2; }
   if (strcmp(mode, "*") == 0)
-  { ans = atof(s_num1) * atof(s_num2); }
+  { ans = num1 * num2; }
   if (strcmp(mode, "/") == 0)
-  { ans = atof(s_num1) / atof(s_num2); }
+  { ans = num1 / num2; }
 
   printf("RES : %f\n", ans);
-  char c[100]; //size of the number
-  sprintf(c, "%g", ans);
+  char c[1000]; //size of the number
+  // sprintf(c, "%g", ans);
+  sprintf(c, "{\n\t\"code\" : \"calcule\",\n\t\"valeurs\" : [ \"%s\", \"%.4f\", \"%.4f\" ],\n\t\"answer\" : \"%.4f\"\n}\n\n", mode, num1, num2, ans);
   return renvoie_message(client_socket_fd, c);
 }
 
@@ -114,15 +120,19 @@ recois_couleurs(int client_socket_fd, char *data)
 
   //On lit les couleurs
   ptr = strtok(NULL, " ");
+  strcat(out, "{\n\t\"code\" : \"balises\",\n\t\"valeurs\" : [");
   while( ptr != NULL ) 
   {
-    strcat(out, "#");
+    strcat(out, " \"#");
     strcat(out, ptr);
-    strcat(out, ", ");
+    strcat(out, "\"");
     printf( " %s\n", ptr );
   
     ptr = strtok(NULL, " ");
+    if (ptr != NULL )
+      strcat(out, ",");
   }
+  strcat(out, "]\n}\n");
 
   printf("%s\n", out);
   fichier = fopen("couleurs.txt", "w+");
@@ -134,7 +144,7 @@ recois_couleurs(int client_socket_fd, char *data)
   else
   { printf("Impossible d'ouvrir le fichier"); }
   
-  renvoie_message(client_socket_fd, "Enregistré");
+  renvoie_message(client_socket_fd, out);
 }
 
 recois_balises(int client_socket_fd, char *data)
