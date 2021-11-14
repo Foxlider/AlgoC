@@ -54,7 +54,9 @@ void plot(char *data) {
  */
 int renvoie_nom(int client_socket_fd, char *data)
 {
-  return renvoie_message(client_socket_fd, data);
+    char c[1000];
+    sprintf(c, "{\n\t\"code\" : \"message\",\n\t\"valeurs\" : [ \"%s\" ]\n}\n\n", data);
+    return renvoie_message(client_socket_fd, c);
 }
 
 int recois_numeros_calcul(int client_socket_fd, char *data)
@@ -69,19 +71,15 @@ int recois_numeros_calcul(int client_socket_fd, char *data)
 
   char * ptr = strtok(data, " ");
   strcpy(code, ptr);
-  printf("A\n");
   
   ptr = strtok(NULL, " ");
   strcpy(mode, ptr);
-  printf("A\n");
   
   ptr = strtok(NULL, " ");
   strcpy(s_num1, ptr);
-  printf("A\n");
   
   ptr = strtok(NULL, " ");
   strcpy(s_num2, ptr);
-  printf("A\n");
 
   printf("mode : %s\n", mode);
   printf("code : %s\n", code);
@@ -120,7 +118,7 @@ recois_couleurs(int client_socket_fd, char *data)
 
   //On lit les couleurs
   ptr = strtok(NULL, " ");
-  strcat(out, "{\n\t\"code\" : \"balises\",\n\t\"valeurs\" : [");
+  strcat(out, "{\n\t\"code\" : \"couleurs\",\n\t\"valeurs\" : [");
   while( ptr != NULL ) 
   {
     strcat(out, " \"#");
@@ -165,19 +163,20 @@ recois_balises(int client_socket_fd, char *data)
   //On lit les couleurs
   ptr = strtok(NULL, " ");
   i = 0;
+  strcat(out, "{\n\t\"code\" : \"balises\",\n\t\"valeurs\" : [");
   while( ptr != NULL ) 
   {
-    i++;
-    sprintf(i_s, "b%d : #", i);
-    strcat(out, i_s);
+    strcat(out, " \"#");
     strcat(out, ptr);
-    strcat(out, "\n");
+    strcat(out, "\"");
     printf( " %s\n", ptr );
   
     ptr = strtok(NULL, " ");
+    if (ptr != NULL )
+      strcat(out, ",");
   }
-
-
+  strcat(out, "]\n}\n");
+  
   //printf("%s\n", out);
   fichier = fopen("balise.txt", "w+");
   if(fichier != NULL)
@@ -241,11 +240,12 @@ int recois_envoie_message(int socketfd) {
   if (strcmp(code, "message:") == 0) {
     char message[100];
     printf("Reponse (max 1000 caracteres): ");
-    fgets(message, 1024, stdin);
-    strcpy(data, "message: ");
-    strcat(data, message);
-    
-    renvoie_message(client_socket_fd, data);
+    scanf("%s", message);    
+
+    char c[1000];
+    sprintf(c, "{\n\t\"code\" : \"message\",\n\t\"valeurs\" : [ \"%s\" ]\n}\n\n", message);
+
+    renvoie_message(client_socket_fd, c);
   }
   if (strcmp(code, "hostname:") == 0) 
   { renvoie_nom(client_socket_fd, data); }

@@ -1,2 +1,4 @@
-b1 : #gr
-b2 : #bfqej
+{
+	"code" : "balises",
+	"valeurs" : [ "#pouic", "#pouet", "#tut"]
+}
