@@ -55,7 +55,9 @@ void plot(char *data) {
 int renvoie_nom(int client_socket_fd, char *data)
 {
     char c[1000];
-    sprintf(c, "{\n\t\"code\" : \"message\",\n\t\"valeurs\" : [ \"%s\" ]\n}\n\n", data);
+    char nom[512];
+    gethostname(nom, 1023);
+    sprintf(c, "{\n\t\"code\" : \"message\",\n\t\"valeurs\" : [ \"%s\" ]\n}\n\n", nom);
     return renvoie_message(client_socket_fd, c);
 }
 
