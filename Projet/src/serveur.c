@@ -260,6 +260,10 @@ int recois_envoie_message(int socketfd) {
 
   if (strcmp(code, "balise:") == 0)
   { recois_balises(client_socket_fd, data); }
+  if (strcmp(code, "graph:") == 0)
+  {
+    plot(data);
+  }
   else {
     //plot(data);
   }

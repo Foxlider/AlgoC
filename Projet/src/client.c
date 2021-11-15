@@ -36,6 +36,7 @@ int envoie_recois_message(int socketfd) {
   printf(" 3. : Calcul\n");
   printf(" 4. : Couleurs\n");
   printf(" 5. : Balises\n");
+  printf(" 6. : Graph\n");
 
   //Securité pour l'input de la commande
   while (nb == 0)
@@ -43,7 +44,7 @@ int envoie_recois_message(int socketfd) {
     //scanf("%s", nb_s);
     fgets(nb_s, 3, stdin);
     nb = atol(nb_s);
-    if(nb > 5 || nb < 0)
+    if(nb > 6 || nb < 0)
     { nb = 0; }
   }
 
@@ -81,6 +82,10 @@ int envoie_recois_message(int socketfd) {
       //ENVOI DE BALISES
       envoi_balise(socketfd, data);
       break;
+    case 6:
+      //ENVOI GRAPH
+      envoi_graph(socketfd, data);
+      break;
   }
 
   //LECTURE REPONSE
@@ -105,16 +110,22 @@ void analyse(char *pathname, char *data) {
   //compte de couleurs
   couleur_compteur *cc = analyse_bmp_image(pathname);
 
+  int nbrCouleurs = -1;
   int count;
-  strcpy(data, "couleurs: ");
-  char temp_string[10] = "10,";
-  if (cc->size < 10) {
+  strcpy(data, "graph: ");
+  printf("\nNombre de couleurs a recuperer : (entre 0 et 30)\n");
+  while (nbrCouleurs < 0 || nbrCouleurs > 30) {
+    scanf("%d", &nbrCouleurs);
+  }
+  char temp_string[nbrCouleurs+1];
+
+  if (cc->size < nbrCouleurs) {
     sprintf(temp_string, "%d,", cc->size);
   }
   strcat(data, temp_string);
-  
+  printf("Test1");
   //choisir 10 couleurs
-  for (count = 1; count < 11 && cc->size - count >0; count++) {
+  for (count = 1; count < nbrCouleurs+1 && cc->size - count >0; count++) {
     if(cc->compte_bit ==  BITS32) {
       sprintf(temp_string, "#%02x%02x%02x,", cc->cc.cc24[cc->size-count].c.rouge,cc->cc.cc32[cc->size-count].c.vert,cc->cc.cc32[cc->size-count].c.bleu);
     }
@@ -255,6 +266,24 @@ int envoi_balise(int socketfd, char *data)
   //printf("%s\n", data);
 
   //Envoi
+  int write_status = write(socketfd, data, strlen(data));
+  if ( write_status < 0 ) {
+    perror("erreur ecriture");
+    exit(EXIT_FAILURE);
+  }
+
+  return 0;
+}
+
+int envoi_graph(int socketfd, char *pathname) {
+  char data[1024];
+  memset(data, 0, sizeof(data));
+
+  printf("Chemin de l'image : ");
+  scanf("%s", pathname);
+
+  analyse(pathname, data);
+  
   int write_status = write(socketfd, data, strlen(data));
   if ( write_status < 0 ) {
     perror("erreur ecriture");
