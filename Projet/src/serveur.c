@@ -61,7 +61,7 @@ int renvoie_nom(int client_socket_fd, char *data)
     return renvoie_message(client_socket_fd, c);
 }
 
-int recois_numeros_calcul(int client_socket_fd, char *data)
+int recois_numeros_calcule(int client_socket_fd, char *data)
 {
   float ans;
   char code[20];
@@ -253,7 +253,7 @@ int recois_envoie_message(int socketfd) {
   { renvoie_nom(client_socket_fd, data); }
 
   if (strcmp(code, "calcul:") == 0)
-  { recois_numeros_calcul(client_socket_fd, data); }
+  { recois_numeros_calcule(client_socket_fd, data); }
 
   if (strcmp(code, "couleur:") == 0)
   { recois_couleurs(client_socket_fd, data); }

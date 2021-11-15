@@ -21,7 +21,7 @@
  * Il faut un argument : l'identifiant de la socket
  */
 
-int envoie_recois_message(int socketfd) {
+int recois_envoie_message(int socketfd) {
  
   char data[1024];
   char message[1024];
@@ -53,7 +53,7 @@ int envoie_recois_message(int socketfd) {
   {
     case 1:
       //ENVOI DU HOSTNAME
-      envoie_nom_de_client(socketfd);
+      renvoie_nom(socketfd);
       break;
     case 2:
       //ENVOI DE MESSAGE
@@ -72,15 +72,15 @@ int envoie_recois_message(int socketfd) {
       break;
     case 3:
       //ENVOI DE CALCUL
-      envoi_operateur_numeros(socketfd, message);
+      envoie_operateur_numeros(socketfd, message);
       break;
     case 4:
       //ENVOI DE COULEURS
-      envoi_couleurs(socketfd, data);
+      envoie_couleurs(socketfd, data);
       break;
     case 5:
       //ENVOI DE BALISES
-      envoi_balise(socketfd, data);
+      envoie_balises(socketfd, data);
       break;
     case 6:
       //ENVOI GRAPH
@@ -140,7 +140,7 @@ void analyse(char *pathname, char *data) {
 }
 
 
-int envoie_nom_de_client(int socketfd)
+int renvoie_nom(int socketfd)
 {
   char message[1000];
   char nom[1024];
@@ -156,11 +156,11 @@ int envoie_nom_de_client(int socketfd)
 }
 
 
-int envoi_operateur_numeros(int socketfd, char *data)
+int envoie_operateur_numeros(int socketfd, char *data)
 {
   memset(data, 0, sizeof(data));
   char message[1000];
-  char in[1000];
+  char in[1024];
   printf("Calcul : ");
   fflush(stdin);
   fgets(in, 1024, stdin);
@@ -176,22 +176,7 @@ int envoi_operateur_numeros(int socketfd, char *data)
   }
 }
 
-//OLD
-int envoie_couleurs(int socketfd, char *pathname) {
-  char data[1024];
-  memset(data, 0, sizeof(data));
-  analyse(pathname, data);
-  
-  int write_status = write(socketfd, data, strlen(data));
-  if ( write_status < 0 ) {
-    perror("erreur ecriture");
-    exit(EXIT_FAILURE);
-  }
-
-  return 0;
-}
-
-int envoi_couleurs(int socketfd, char *data)
+int envoie_couleurs(int socketfd, char *data)
 {
   memset(data, 0, sizeof(data));
   char couleur[10];
@@ -233,7 +218,7 @@ int envoi_couleurs(int socketfd, char *data)
   return 0;
 }
 
-int envoi_balise(int socketfd, char *data)
+int envoie_balises(int socketfd, char *data)
 {
   memset(data, 0, sizeof(data));
   char balise[100];
@@ -321,7 +306,7 @@ int main(int argc, char **argv) {
     perror("connection serveur");
     exit(EXIT_FAILURE);
   }
-  envoie_recois_message(socketfd);
+  recois_envoie_message(socketfd);
   //envoie_couleurs(socketfd, argv[1]);
 
   close(socketfd);
