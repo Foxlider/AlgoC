@@ -1,15 +1,31 @@
+TP 1 & TP 2
+
 # Bibliothèques
-* 
-*
+* string.h
+* stdio.h
+* stdlib.h
+* unistd.h
+* sys/types.h
+* sys/socket.h
+* netinet/in.h
+* client.h
+* bmp.h
 
 # Références
-*
-*
+* Groupe 3 
+* https://github.com/Foxlider/AlgoC
 
 # Difficulté
-* 
+* message : `*` 
+* nom : `*` 
+* calcul : `*` 
+* couleurs : `*` 
+* balises : `*`
+* gnuplot : `*`  
+* json : `**` 
+
 
 # Commentaires
-* 
-* 
+* Pas de difficultées ressenties lors de ces premiers travaux pratiques.
+* Sujet intéressant nous permettant de manipuler plusieurs types de fichiers et d'exploiter de manière avancée le langage c.
 
