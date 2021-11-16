@@ -15,6 +15,8 @@
 #include <unistd.h>
 
 #include "serveur.h"
+#include "json.h"
+#include "validateur.h"
 
 void plot(char *data) {
 
@@ -56,7 +58,7 @@ int renvoie_nom(int client_socket_fd, char *data)
 {
     char c[1000];
     char nom[512];
-    gethostname(nom, 1023);
+    gethostname(nom, 512);
     sprintf(c, "{\n\t\"code\" : \"message\",\n\t\"valeurs\" : [ \"%s\" ]\n}\n\n", nom);
     return renvoie_message(client_socket_fd, c);
 }
@@ -107,7 +109,7 @@ int recois_numeros_calcule(int client_socket_fd, char *data)
   return renvoie_message(client_socket_fd, c);
 }
 
-recois_couleurs(int client_socket_fd, char *data)
+int recois_couleurs(int client_socket_fd, char *data)
 {
   char out[2048];
   FILE* fichier = NULL;
@@ -147,7 +149,7 @@ recois_couleurs(int client_socket_fd, char *data)
   renvoie_message(client_socket_fd, out);
 }
 
-recois_balises(int client_socket_fd, char *data)
+int recois_balises(int client_socket_fd, char *data)
 {
   char out[2048];
   char i_s[10];
@@ -273,8 +275,6 @@ int recois_envoie_message(int socketfd) {
 }
 
 
-
-
 int main() {
 
   int socketfd;
@@ -308,6 +308,20 @@ int main() {
     return(EXIT_FAILURE);
   }
  
+
+
+  char *buff[4] = {"Hello function" , "How are you?" , "Catch some strings"};
+	char output[1024];
+  format_value_to_json("test", "2", output);
+  printf("%s\n", output);
+
+  char c1[254];
+  char c2[1024];
+  int ret;
+  ret = validate_json_base(output, c1, c2);
+  printf("code:'%s'\ncontent:'%s'\n", c1, c2);
+  if(ret != 0)
+    return 1;
   // Écouter les messages envoyés par le client
   listen(socketfd, 10);
 

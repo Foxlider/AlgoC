@@ -19,8 +19,8 @@ int recois_envoie_message(int socketfd);
 void plot(char *data);
 int renvoie_nom(int client_socket_fd, char *data);
 int recois_numeros_calcule(int client_socket_fd, char *data);
-recois_couleurs(int client_socket_fd, char *data);
-recois_balises(int client_socket_fd, char *data);
+int recois_couleurs(int client_socket_fd, char *data);
+int recois_balises(int client_socket_fd, char *data);
 int renvoie_message(int client_socket_fd, char *data);
 
 
