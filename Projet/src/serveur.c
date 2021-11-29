@@ -309,45 +309,45 @@ int main() {
   }
  
 
-	char output[1024];
-  char c1[254] = {0};
-  char c2[1024] = {0};
-  int ret;
-  char *buff[4] = {"#test" , "#pouic" , "#pouet"};
+	// char output[1024];
+  // char c1[254] = {0};
+  // char c2[1024] = {0};
+  // int ret;
+  // char *buff[4] = {"#test" , "#pouic" , "#pouet"};
 
-  printf("TEST VALUE TO JSON\n");
-  format_value_to_json("test", "2", output);
-  printf("%s\n", output);
-  ret = validate_json_base(output, c1, c2);
-  printf("code:'%s'\ncontent:'%s'\n", c1, c2);
-  if(ret != 0)
-    return 1;
+  // printf("TEST VALUE TO JSON\n");
+  // format_value_to_json("test", "2", output);
+  // printf("%s\n", output);
+  // ret = validate_json_base(output, c1, c2);
+  // printf("code:'%s'\ncontent:'%s'\n", c1, c2);
+  // if(ret != 0)
+  //   return 1;
   
-  printf("TEST ARRAY TO JSON\n");
-  format_array_to_json("test", buff, 3, output);
-  printf("%s\n", output);
-  ret = validate_json_base(output, c1, c2);
-  printf("code:'%s'\ncontent:'%s'\n", c1, c2);
-  if(ret != 0)
-    return 1;
+  // printf("TEST ARRAY TO JSON\n");
+  // format_array_to_json("test", buff, 3, output);
+  // printf("%s\n", output);
+  // ret = validate_json_base(output, c1, c2);
+  // printf("code:'%s'\ncontent:'%s'\n", c1, c2);
+  // if(ret != 0)
+  //   return 1;
 
 
-  printf("TEST STRING TO JSON\n");
-  format_string_to_json("test", "pouic", output);
-  printf("%s\n", output);
-  ret = validate_json_base(output, c1, c2);
-  printf("code:'%s'\ncontent:'%s'\n", c1, c2);
-  if(ret != 0)
-    return 1;
+  // printf("TEST STRING TO JSON\n");
+  // format_string_to_json("test", "pouic", output);
+  // printf("%s\n", output);
+  // ret = validate_json_base(output, c1, c2);
+  // printf("code:'%s'\ncontent:'%s'\n", c1, c2);
+  // if(ret != 0)
+  //   return 1;
   
 
-  printf("TEST NUM TO JSON\n");
-  format_num_to_json("test", 3, output);
-  printf("%s\n", output);
-  ret = validate_json_base(output, c1, c2);
-  printf("code:'%s'\ncontent:'%s'\n", c1, c2);
-  if(ret != 0)
-    return 1;
+  // printf("TEST NUM TO JSON\n");
+  // format_num_to_json("test", 3, output);
+  // printf("%s\n", output);
+  // ret = validate_json_base(output, c1, c2);
+  // printf("code:'%s'\ncontent:'%s'\n", c1, c2);
+  // if(ret != 0)
+  //   return 1;
 
 
   // Écouter les messages envoyés par le client
