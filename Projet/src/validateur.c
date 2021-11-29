@@ -16,8 +16,9 @@ int validate_json_base(char * input, char *code, char *content)
     int i;
     int j = 0;
     char c[1024];
+    memset(content, 0, strlen(content));
+    memset(code, 0, strlen(code));
 
-    
     strcpy(c, input);
     char *p = strtok(c, "\n");
     char *array[4];
@@ -33,7 +34,6 @@ int validate_json_base(char * input, char *code, char *content)
     //     printf("%d>'%s'\n", j, array[j]);
     //     fflush(stdout);
     // }
-
 
     int reti;
     int ok = 1;
@@ -103,17 +103,20 @@ int validate_json_base(char * input, char *code, char *content)
 
             case 2:
                 //SSCANF car il y a un espace entre le contenu et les crochets
-                i = sscanf(array[j], "\t\"valeurs\" : [ %s ]", content);
-                if(i != 1)
-                {   
+
+
+                const char *ptr1 = strchr(array[j], '[');
+                const char *ptr2 = strchr(array[j], ']');
+                
+                if(!ptr1 || !ptr2)
                     ok = ok*0;
-                    // printf("%d %d>No Match\n", ok, j);
-                    return 12;
-                }
                 else
                 {
-                    ok = ok*1;
-                    // printf("%d %d>Match => content='%s'\n", ok, j, content);
+                    int p1 = ptr1-array[j] + 2; //+- 2 pour enlever l'accolade et les espaces
+                    int p2 = ptr2-array[j];
+                    int len = p2-p1;
+
+                    strncpy(content, (array[j] + p1), len-1); //On copie le string à partir de l'index de '[' jusqu'à ']'
                 }
                 break;
 
