@@ -27,7 +27,7 @@ couleur_compteur * analyse_bmp_image(char *nom_de_fichier) {
   printf("%s",nom_de_fichier);
   if (fd < 0) {
     perror("Erreur: open");
-    return 0;
+    return (NULL);
   }
 
   bmp_header bheader;

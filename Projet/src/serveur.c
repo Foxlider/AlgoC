@@ -22,7 +22,7 @@ void plot(char *data) {
 
   //Extraire le compteur et les couleurs RGB 
   FILE *p = popen("gnuplot -persist", "w");
-  printf("Plot");
+  //printf("Plot");
   int count = 0;
   int n;
   char *saveptr = NULL;
@@ -48,7 +48,7 @@ void plot(char *data) {
     count++;
   }
   fprintf(p, "e\n");
-  printf("Plot: FIN\n");
+  //printf("Plot: FIN\n");
   pclose(p);
 }
 
@@ -59,11 +59,11 @@ int renvoie_nom(int client_socket_fd, char *data)
     char c[1000];
     char nom[512];
     gethostname(nom, 512);
-    sprintf(c, "{\n\t\"code\" : \"message\",\n\t\"valeurs\" : [ \"%s\" ]\n}\n\n", nom);
+    sprintf(c, "{\n\t\"nom\" : [ \"%s\" ]\n}\n\n", nom);
     return renvoie_message(client_socket_fd, c);
 }
 
-int recois_numeros_calcule(int client_socket_fd, char *data)
+int recois_numeros_calcule(int client_socket_fd, char *content)
 {
   float ans;
   char code[20];
@@ -72,27 +72,21 @@ int recois_numeros_calcule(int client_socket_fd, char *data)
   char s_num2[100];
   float num1;
   float num2;
-
-  char * ptr = strtok(data, " ");
-  strcpy(code, ptr);
+  char * ptr = strtok(content, "\"");
   
-  ptr = strtok(NULL, " ");
+  //printf("\t%s\n", ptr);
   strcpy(mode, ptr);
-  
-  ptr = strtok(NULL, " ");
+  ptr = strtok(NULL, ", ");
   strcpy(s_num1, ptr);
-  
   ptr = strtok(NULL, " ");
   strcpy(s_num2, ptr);
-
-  printf("mode : %s\n", mode);
-  printf("code : %s\n", code);
-  printf("n1 : %s\n", s_num1);
-  printf("n2 : %s\n", s_num2);
-  
+  //printf("mode : %s\n", mode);
+  //printf("n1 : %s\n", s_num1);
+  //printf("n2 : %s\n", s_num2);
   num1 = atof(s_num1);
   num2 = atof(s_num2);
-
+  
+  //printf("\tn1 : %f - n2 : %f", num1, num2);
   if (strcmp(mode, "+") == 0)
   { ans = num1 + num2; }
   if (strcmp(mode, "-") == 0)
@@ -105,7 +99,7 @@ int recois_numeros_calcule(int client_socket_fd, char *data)
   printf("RES : %f\n", ans);
   char c[1000]; //size of the number
   // sprintf(c, "%g", ans);
-  sprintf(c, "{\n\t\"code\" : \"calcule\",\n\t\"valeurs\" : [ \"%s\", \"%.4f\", \"%.4f\" ],\n\t\"answer\" : \"%.4f\"\n}\n\n", mode, num1, num2, ans);
+  sprintf(c, "{\n\t\"valeurs\" : [ \"%.4f\" ]\n}\n\n", ans);
   return renvoie_message(client_socket_fd, c);
 }
 

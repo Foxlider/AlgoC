@@ -13,7 +13,6 @@
 
 int validate_json_base(char * input, char *code, char *content)
 {
-    int i;
     int j = 0;
     char c[1024];
     memset(content, 0, strlen(content));
@@ -38,7 +37,6 @@ int validate_json_base(char * input, char *code, char *content)
     int reti;
     int ok = 1;
     char msgbuf[100];
-    int k,l;
     for (j = 0; j < 4; ++j) 
     {
         regex_t regex;
@@ -68,6 +66,7 @@ int validate_json_base(char * input, char *code, char *content)
                 break;
 
             case 1:
+            {
                 //STRTOK car ni le regex ni sscanf ne fonctionnent
                 int k = 0;
                 char *p = strtok(array[j], "\"");
@@ -100,8 +99,9 @@ int validate_json_base(char * input, char *code, char *content)
                     //return 11;
                 }
                 break;
-
+            }
             case 2:
+            {
                 //SSCANF car il y a un espace entre le contenu et les crochets
 
 
@@ -119,7 +119,7 @@ int validate_json_base(char * input, char *code, char *content)
                     strncpy(content, (array[j] + p1), len-1); //On copie le string à partir de l'index de '[' jusqu'à ']'
                 }
                 break;
-
+            }
             case 3:
                 //regex pour la dernière accolade
                 /* Compile regular expression */

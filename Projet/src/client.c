@@ -29,6 +29,7 @@ int recois_envoie_message(int socketfd) {
   memset(data, 0, sizeof(data));
   char nb_s[3];
   int nb = 0;
+  int errorCase = 0;
 
   printf("Choix du mode : \n");
   printf(" 1. : Hostname \n");
@@ -84,7 +85,10 @@ int recois_envoie_message(int socketfd) {
       break;
     case 6:
       //ENVOI GRAPH
-      envoi_graph(socketfd, data);
+      if (envoi_graph(socketfd, data) == 1) {
+        return 1;
+        errorCase = 1;
+      }
       break;
   }
 
@@ -101,44 +105,56 @@ int recois_envoie_message(int socketfd) {
     return -1;
   }
 
-  printf("Message recu: %s\n", data);
- 
+  if (nb == 4)
+    printf("{\n\t\"code\" : \"couleurs\",\n\t\"valeurs\" : [ \"enregistre\" ]\n}\n");
+  else if (nb == 6)
+    printf("{\n\t\"code\" : \"graph\",\n\t\"valeurs\" : [ \"enregistre\" ]\n}\n");
+  else if (nb == 5)
+    printf("{\n\t\"code\" : \"balises\",\n\t\"valeurs\" : [ \"enregistre\" ]\n}\n");
+  else if (errorCase == 1) {
+    printf("Erreur");
+    return 1;
+  }
+  else
+    printf("Message recu: %s\n", data);
   return 0;
 }
 
-void analyse(char *pathname, char *data) {
+int analyse(char *pathname, char *data) {
   //compte de couleurs
-  couleur_compteur *cc = analyse_bmp_image(pathname);
-
-  int nbrCouleurs = -1;
-  int count;
-  printf("\nNombre de couleurs a recuperer : (entre 0 et 30)\n");
-  while (nbrCouleurs < 0 || nbrCouleurs > 30) {
-    scanf("%d", &nbrCouleurs);
-  }
-  char temp_string[nbrCouleurs+1];
-
-  if (cc->size < nbrCouleurs) {
-    sprintf(temp_string, "%d,", cc->size);
-  }
-  strcat(data, temp_string);
-  printf(">%s\n", data);
-  //choisir 10 couleurs
-  for (count = 1; count < nbrCouleurs+1 && cc->size - count >0; count++) {
-    if(cc->compte_bit ==  BITS32) {
-      sprintf(temp_string, "\"#%02x%02x%02x\", ", cc->cc.cc24[cc->size-count].c.rouge,cc->cc.cc32[cc->size-count].c.vert,cc->cc.cc32[cc->size-count].c.bleu);
+  if (analyse_bmp_image(pathname) == NULL)
+    return 1;
+  else {
+    couleur_compteur *cc = analyse_bmp_image(pathname);
+    int nbrCouleurs = -1;
+    int count;
+    printf("\nNombre de couleurs a recuperer (entre 0 et 30) : ");
+    while (nbrCouleurs < 0 || nbrCouleurs > 30) {
+      scanf("%d", &nbrCouleurs);
     }
-    if(cc->compte_bit ==  BITS24) {
-      sprintf(temp_string, "\"#%02x%02x%02x\", ", cc->cc.cc32[cc->size-count].c.rouge,cc->cc.cc32[cc->size-count].c.vert,cc->cc.cc32[cc->size-count].c.bleu);
+    char temp_string[nbrCouleurs+1];
+
+    if (cc->size < nbrCouleurs) {
+      sprintf(temp_string, "%d,", cc->size);
     }
     strcat(data, temp_string);
+    //printf(">%s\n", data);
+    //choisir 10 couleurs
+    for (count = 1; count < nbrCouleurs+1 && cc->size - count >0; count++) {
+      if(cc->compte_bit ==  BITS32) {
+        sprintf(temp_string, "\"#%02x%02x%02x\", ", cc->cc.cc24[cc->size-count].c.rouge,cc->cc.cc32[cc->size-count].c.vert,cc->cc.cc32[cc->size-count].c.bleu);
+      }
+      if(cc->compte_bit ==  BITS24) {
+        sprintf(temp_string, "\"#%02x%02x%02x\", ", cc->cc.cc32[cc->size-count].c.rouge,cc->cc.cc32[cc->size-count].c.vert,cc->cc.cc32[cc->size-count].c.bleu);
+      }
+      strcat(data, temp_string);
+    }
+    //printf(">%s\n", data);
+
+    //enlever le dernier virgule
+    data[strlen(data)-2] = '\0';
   }
-  printf(">%s\n", data);
-
-  //enlever le dernier virgule
-  data[strlen(data)-2] = '\0';
 }
-
 
 int renvoie_nom(int socketfd)
 {
@@ -147,7 +163,7 @@ int renvoie_nom(int socketfd)
   gethostname(nom, 1023);
   // strcpy(message, "hostname: ");
   // strcat(message, nom);
-  printf("Nom :%s\n", nom);
+  //printf("Nom :%s\n", nom);
   format_string_to_json("hostname", nom, message);
   int write_status = write(socketfd, message, strlen(message));
   if ( write_status < 0 ) {
@@ -155,7 +171,6 @@ int renvoie_nom(int socketfd)
     exit(EXIT_FAILURE);
   }
 }
-
 
 int envoie_operateur_numeros(int socketfd, char *data)
 {
@@ -179,7 +194,8 @@ int envoie_operateur_numeros(int socketfd, char *data)
   //On découpe l'input en différents caractères : operateur n1 n2
 
   format_array_to_json("calcul", array, 3, message);
-  printf("Calcul :%s\n", message);
+  //printf("Calcul :%s\n", message);
+  printf("%s\n", message);
   int write_status = write(socketfd, message, strlen(message));
   if ( write_status < 0 ) {
     perror("erreur ecriture");
@@ -278,14 +294,16 @@ int envoi_graph(int socketfd, char *pathname) {
   printf("Chemin de l'image : ");
   scanf("%s", pathname);
 
-  analyse(pathname, data);
-  
-  format_value_to_json("graph", data, output);
+  if (analyse(pathname, data) == 1)
+    return (1);
+  else {
+    format_value_to_json("graph", data, output);
 
-  int write_status = write(socketfd, output, strlen(output));
-  if ( write_status < 0 ) {
-    perror("erreur ecriture");
-    exit(EXIT_FAILURE);
+    int write_status = write(socketfd, output, strlen(output));
+    if ( write_status < 0 ) {
+      perror("erreur ecriture");
+      exit(EXIT_FAILURE);
+    }
   }
 
   return 0;

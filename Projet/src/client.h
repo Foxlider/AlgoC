@@ -18,7 +18,7 @@
  * Il faut un argument : l'identifiant de la socket
  */
 int recois_envoie_message(int socketfd);
-void analyse(char *pathname, char *data);
+int analyse(char *pathname, char *data);
 int renvoie_nom(int socketfd);
 int envoie_operateur_numeros(int socketfd, char *data);
 int envoie_couleurs(int socketfd, char *data);
