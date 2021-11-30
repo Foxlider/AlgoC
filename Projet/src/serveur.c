@@ -238,10 +238,22 @@ int recois_envoie_message(int socketfd) {
    */
   printf ("Message recu: %s\n", data);
   char code[10];
-  sscanf(data, "%s", code);
+  // sscanf(data, "%s", code);
+  
+  char content[1024];
+  int valid = validate_json_base(data, code, content);
+
+  if(valid != 0)
+  { 
+    printf("Le JSON n'est pas valide.");
+    close(socketfd);
+    exit -1;
+  }
+
+  printf("CODE : %s\nCONTENT : %s\n", code, content);
 
   //Si le message commence par le mot: 'message:' 
-  if (strcmp(code, "message:") == 0) {
+  if (strcmp(code, "message") == 0) {
     char message[100];
     printf("Reponse (max 1000 caracteres): ");
     scanf("%s", message);    
@@ -251,23 +263,20 @@ int recois_envoie_message(int socketfd) {
 
     renvoie_message(client_socket_fd, c);
   }
-  if (strcmp(code, "hostname:") == 0) 
+  if (strcmp(code, "hostname") == 0) 
   { renvoie_nom(client_socket_fd, data); }
 
-  if (strcmp(code, "calcul:") == 0)
+  if (strcmp(code, "calcul") == 0)
   { recois_numeros_calcule(client_socket_fd, data); }
 
-  if (strcmp(code, "couleur:") == 0)
+  if (strcmp(code, "couleur") == 0)
   { recois_couleurs(client_socket_fd, data); }
 
   if (strcmp(code, "balise:") == 0)
   { recois_balises(client_socket_fd, data); }
-  if (strcmp(code, "graph:") == 0)
+  if (strcmp(code, "graph") == 0)
   {
     plot(data);
-  }
-  else {
-    //plot(data);
   }
 
   //fermer le socket 
