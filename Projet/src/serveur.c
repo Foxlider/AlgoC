@@ -269,14 +269,14 @@ int recois_envoie_message(int socketfd) {
   if (strcmp(code, "calcul") == 0)
   { recois_numeros_calcule(client_socket_fd, data); }
 
-  if (strcmp(code, "couleur") == 0)
-  { recois_couleurs(client_socket_fd, data); }
+  if (strcmp(code, "couleurs") == 0)
+  { recois_couleurs(client_socket_fd, content); }
 
-  if (strcmp(code, "balise:") == 0)
-  { recois_balises(client_socket_fd, data); }
+  if (strcmp(code, "balises") == 0)
+  { recois_balises(client_socket_fd, content); }
   if (strcmp(code, "graph") == 0)
   {
-    plot(data);
+    plot(content);
   }
 
   //fermer le socket 
@@ -318,6 +318,24 @@ int main() {
   }
  
 
+  //ARRAY PARSER
+  // char** array;
+  // int rows = 5;
+  // int cols = 10;
+  // int i;
+  // array = malloc(rows * sizeof *array);
+  // for (i=0; i<rows; i++)
+  // {
+  //   array[i] = malloc(cols * sizeof *array[i]);
+  // }
+  // char *s = "\"#FAFAFA\", \"#AAAAAA\", \"#FFFFFF\"";
+  // int r = parse_json_string_to_array(s, array, 3, 10);
+  // for (int i = 0; i < 3; i++)
+  // {
+  //   printf("%d>%s\n", i, array[i]);
+  // }
+
+  //JSON VALIDATORS
 	// char output[1024];
   // char c1[254] = {0};
   // char c2[1024] = {0};
