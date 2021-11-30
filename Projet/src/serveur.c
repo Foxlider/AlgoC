@@ -111,30 +111,36 @@ int recois_numeros_calcule(int client_socket_fd, char *data)
 
 int recois_couleurs(int client_socket_fd, char *data)
 {
+  
   char out[2048];
   FILE* fichier = NULL;
-
-  //On lit la commande
-  char * ptr = strtok(data, " ");
-  
-  //On lit le nombre de couleurs
-  ptr = strtok(NULL, " ");
-
-  //On lit les couleurs
-  ptr = strtok(NULL, " ");
-  strcat(out, "{\n\t\"code\" : \"couleurs\",\n\t\"valeurs\" : [");
-  while( ptr != NULL ) 
+  char* ptr = NULL;
+  char** array;
+  int rows = 30;
+  int cols = 10;
+  int i;
+  array = malloc(rows * sizeof *array);
+  for (i=0; i<rows; i++)
   {
-    strcat(out, " \"#");
-    strcat(out, ptr);
-    strcat(out, "\"");
-    printf( " %s\n", ptr );
-  
-    ptr = strtok(NULL, " ");
-    if (ptr != NULL )
-      strcat(out, ",");
+    array[i] = malloc(cols * sizeof *array[i]);
   }
-  strcat(out, "]\n}\n");
+  int r = parse_json_string_to_array(data, array, rows, cols);
+  
+  
+
+  strcat(out, "{\n\t\"code\" : \"couleurs\",\n\t\"valeurs\" : [ ");
+  for (int i = 0; i < rows && array[i]!=NULL; i++)
+  {
+    strcat(out, "\"");
+    strcat(out, array[i]);
+    strcat(out, "\"");
+    if(array[i+1]!=NULL)
+    {
+      strcat(out, ", ");
+    }
+    // printf("%d>%s\n", i, array[i]);
+  }
+  strcat(out, " ]\n}\n");
 
   printf("%s\n", out);
   fichier = fopen("couleurs.txt", "w+");

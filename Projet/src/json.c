@@ -44,12 +44,10 @@ int parse_json_string_to_array(char *data, char **array, int rows, int cols)
   char c[strlen(data)+1];
   strcpy(c, data);
   // printf("%s\n%s\n", data, c);
-  
   char *ptr = strtok(c, "\"");
   int i = 0;
   int j = 0;
-
-  while( ptr != NULL || j < rows) 
+  while( ptr != NULL && j < rows) 
   {
     // printf("%d %d> %s (%u)", i, j, ptr, strlen(ptr));
     if(i%2 == 0)
@@ -61,5 +59,10 @@ int parse_json_string_to_array(char *data, char **array, int rows, int cols)
     ptr = strtok(NULL, "\"");
     i++;
   }
+  for (i = j; i < rows; i++)
+  {
+    array[i] = NULL;
+  }
+  
   return 0;
 }
