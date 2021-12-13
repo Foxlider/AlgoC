@@ -184,7 +184,8 @@ int envoie_operateur_numeros(int socketfd, char *data)
 
   char *p = strtok(in, " ");
   int i = 0;
-  char *array[3];
+  int j = 0;
+  char *array[30];
 
   while (p != NULL)
   {
@@ -193,7 +194,12 @@ int envoie_operateur_numeros(int socketfd, char *data)
   }
   //On découpe l'input en différents caractères : operateur n1 n2
 
-  format_array_to_json("calcule", array, 3, message);
+  for (size_t j = 0; j < i; j++)
+  {
+    printf("array%d : %s\n", j, array[j]);
+  }
+
+  format_array_to_json("calcule", array, i, message);
   //printf("Calcul :%s\n", message);
   printf("%s\n", message);
   int write_status = write(socketfd, message, strlen(message));

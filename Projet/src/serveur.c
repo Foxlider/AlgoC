@@ -17,6 +17,7 @@
 #include "serveur.h"
 #include "json.h"
 #include "validateur.h"
+#include "calcule.h"
 
 void plot(char *data) {
 
@@ -80,6 +81,9 @@ int recois_numeros_calcule(int client_socket_fd, char *content)
   int rows = 30;
   int cols = 10;
   int i;
+  int count = 0;
+
+  //On parse le tableau envoyé par le client
   array = malloc(rows * sizeof *array);
   for (i=0; i<rows; i++)
   {
@@ -91,21 +95,59 @@ int recois_numeros_calcule(int client_socket_fd, char *content)
   strcpy(s_num1, array[1]);
   strcpy(s_num2, array[2]);
 
+  //On fait un sous-tableau contenant que les valeurs
+  char** arr;
+  arr = malloc(rows * sizeof *array);
+  memcpy(arr, &array[1], i*sizeof(*array));
+  for (size_t i = 0; i < rows; i++)
+  {
+    if (arr[i] == NULL)
+    { break; }
+    printf("array%d : %s\n", i, arr[i]);
+    count++;
+  }
+
+  for (size_t i = 0; i < count; i++)
+  {
+    printf("array%d / %d : %s\n", i, count, arr[i]);
+  }
+
   printf("mode : %s\n", mode);
-  printf("n1 : %s\n", s_num1);
-  printf("n2 : %s\n", s_num2);
-  num1 = atof(s_num1);
-  num2 = atof(s_num2);
-  
-  //printf("\tn1 : %f - n2 : %f", num1, num2);
   if (strcmp(mode, "+") == 0)
-  { ans = num1 + num2; }
+  { 
+    ans = atof(arr[0]);
+    for (size_t i = 1; i < count; i++)
+    { ans += atof(arr[i]); } 
+  }
   if (strcmp(mode, "-") == 0)
-  { ans = num1 - num2; }
+  { 
+    ans = atof(arr[0]);
+    for (size_t i = 1; i < count; i++)
+    { ans -= atof(arr[i]); }   
+  }
   if (strcmp(mode, "*") == 0)
-  { ans = num1 * num2; }
+  { 
+    ans = atof(arr[0]);
+    for (size_t i = 1; i < count; i++)
+    { ans *= atof(arr[i]); } 
+  }
   if (strcmp(mode, "/") == 0)
-  { ans = num1 / num2; }
+  { 
+    ans = atof(arr[0]);
+    for (size_t i = 1; i < count; i++)
+    { ans /= atof(arr[i]); } 
+  }
+  if (strcmp(mode, "min") == 0 || strcmp(mode, "minimum") == 0)
+  { ans = minV(count, arr); }
+
+  if (strcmp(mode, "max") == 0 || strcmp(mode, "maximum") == 0)
+  { ans = maxV(count, arr); }
+
+  if (strcmp(mode, "moy") == 0 || strcmp(mode, "moyenne") == 0)
+  { ans = moy(count, arr); }
+  
+  if (strcmp(mode, "et") == 0 || strcmp(mode, "ecart-type") == 0)
+  { ans = ecartType(count, arr); }
 
   printf("RES : %f\n", ans);
   char c[1000]; //size of the number

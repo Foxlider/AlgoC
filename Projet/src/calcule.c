@@ -6,7 +6,7 @@
 float minV(int argc, char **argv)
 {
     float minValue = 100000000000000000;
-    for (int i = 2; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         if (atof(argv[i]) < minValue)
             minValue = atof(argv[i]);
     }
@@ -16,7 +16,7 @@ float minV(int argc, char **argv)
 float maxV(int argc, char **argv)
 {
     float maxValue = -100000000000000000;
-    for (int i = 2; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         if (atof(argv[i]) > maxValue)
             maxValue = atof(argv[i]);
     }
@@ -26,10 +26,10 @@ float maxV(int argc, char **argv)
 float moy(int argc, char **argv)
 {
     float moyenne = 0.0;
-    for (int i = 2; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         moyenne += atof(argv[i]);
     }
-    moyenne /= (argc - 2);
+    moyenne /= argc;
     return moyenne;
 }
 
@@ -39,11 +39,11 @@ float ecartType(int argc, char **argv)
     float variance = 0.0;
     float moyenne = moy(argc, argv);
     float stock = 0;
-    for (int i = 2; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         stock = (atof(argv[i]) - moyenne) * (atof(argv[i]) - moyenne);
         variance += stock;
     }
-    variance /= (argc - 2);
+    variance /= argc;
     if (variance >= 0)
         ecartType = sqrt(variance);
     else
