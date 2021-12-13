@@ -1,4 +1,4 @@
 {
 	"code" : "balises",
-	"valeurs" : [ "#pouic", "#pouet", "#tut"]
+	"valeurs" : [ "#a", "#b", "#c" ]
 }

@@ -193,7 +193,7 @@ int envoie_operateur_numeros(int socketfd, char *data)
   }
   //On découpe l'input en différents caractères : operateur n1 n2
 
-  format_array_to_json("calcul", array, 3, message);
+  format_array_to_json("calcule", array, 3, message);
   //printf("Calcul :%s\n", message);
   printf("%s\n", message);
   int write_status = write(socketfd, message, strlen(message));
@@ -275,7 +275,7 @@ int envoie_balises(int socketfd, char *data)
       strcat(output, ", ");
   }
 
-  format_value_to_json("balise", output, data);
+  format_value_to_json("balises", output, data);
   //Envoi
   int write_status = write(socketfd, data, strlen(data));
   if ( write_status < 0 ) {

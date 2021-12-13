@@ -67,22 +67,33 @@ int recois_numeros_calcule(int client_socket_fd, char *content)
 {
   float ans;
   char code[20];
-  char mode[2];
+  char mode[4];
   char s_num1[100];
   char s_num2[100];
   float num1;
   float num2;
-  char * ptr = strtok(content, "\"");
+  // char * ptr = strtok(content, "\"");
   
-  //printf("\t%s\n", ptr);
-  strcpy(mode, ptr);
-  ptr = strtok(NULL, ", ");
-  strcpy(s_num1, ptr);
-  ptr = strtok(NULL, " ");
-  strcpy(s_num2, ptr);
-  //printf("mode : %s\n", mode);
-  //printf("n1 : %s\n", s_num1);
-  //printf("n2 : %s\n", s_num2);
+  printf("A\n");
+
+  char** array;
+  int rows = 30;
+  int cols = 10;
+  int i;
+  array = malloc(rows * sizeof *array);
+  for (i=0; i<rows; i++)
+  {
+    array[i] = malloc(cols * sizeof *array[i]);
+  }
+  int r = parse_json_string_to_array(content, array, rows, cols);
+  
+  strcpy(mode, array[0]);
+  strcpy(s_num1, array[1]);
+  strcpy(s_num2, array[2]);
+
+  printf("mode : %s\n", mode);
+  printf("n1 : %s\n", s_num1);
+  printf("n2 : %s\n", s_num2);
   num1 = atof(s_num1);
   num2 = atof(s_num2);
   
@@ -105,10 +116,9 @@ int recois_numeros_calcule(int client_socket_fd, char *content)
 
 int recois_couleurs(int client_socket_fd, char *data)
 {
-  
   char out[2048];
   FILE* fichier = NULL;
-  char* ptr = NULL;
+
   char** array;
   int rows = 30;
   int cols = 10;
@@ -154,32 +164,34 @@ int recois_balises(int client_socket_fd, char *data)
   char out[2048];
   char i_s[10];
   FILE* fichier = NULL;
+
+  char** array;
+  int rows = 30;
+  int cols = 10;
   int i;
-
-  
-  //On lit la commande
-  char * ptr = strtok(data, " ");
-
-  //On lit le nombre de couleurs
-  ptr = strtok(NULL, " ");
-  //strcpy(nb, ptr);
-
-  //On lit les couleurs
-  ptr = strtok(NULL, " ");
-  i = 0;
-  strcat(out, "{\n\t\"code\" : \"balises\",\n\t\"valeurs\" : [");
-  while( ptr != NULL ) 
+  array = malloc(rows * sizeof *array);
+  for (i=0; i<rows; i++)
   {
-    strcat(out, " \"#");
-    strcat(out, ptr);
-    strcat(out, "\"");
-    printf( " %s\n", ptr );
-  
-    ptr = strtok(NULL, " ");
-    if (ptr != NULL )
-      strcat(out, ",");
+    array[i] = malloc(cols * sizeof *array[i]);
   }
-  strcat(out, "]\n}\n");
+  int r = parse_json_string_to_array(data, array, rows, cols);
+
+  i = 0;
+  strcat(out, "{\n\t\"code\" : \"balises\",\n\t\"valeurs\" : [ ");
+  
+  for (int i = 0; i < rows && array[i]!=NULL; i++)
+  {
+    strcat(out, "\"");
+    strcat(out, array[i]);
+    strcat(out, "\"");
+    if(array[i+1]!=NULL)
+    {
+      strcat(out, ", ");
+    }
+    // printf("%d>%s\n", i, array[i]);
+  }
+
+  strcat(out, " ]\n}\n");
   
   //printf("%s\n", out);
   fichier = fopen("balise.txt", "w+");
@@ -266,8 +278,8 @@ int recois_envoie_message(int socketfd) {
   if (strcmp(code, "hostname") == 0) 
   { renvoie_nom(client_socket_fd, data); }
 
-  if (strcmp(code, "calcul") == 0)
-  { recois_numeros_calcule(client_socket_fd, data); }
+  if (strcmp(code, "calcule") == 0)
+  { recois_numeros_calcule(client_socket_fd, content); }
 
   if (strcmp(code, "couleurs") == 0)
   { recois_couleurs(client_socket_fd, content); }

@@ -103,7 +103,7 @@ int validate_json_base(char * input, char *code, char *content)
             case 2:
             {
                 //SSCANF car il y a un espace entre le contenu et les crochets
-
+                // i = sscanf(array[j], "\t\"valeurs\" : [ %[^\n] ]", content);
 
                 const char *ptr1 = strchr(array[j], '[');
                 const char *ptr2 = strchr(array[j], ']');

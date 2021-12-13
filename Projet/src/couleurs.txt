@@ -1,4 +1,4 @@
 {
 	"code" : "couleurs",
-	"valeurs" : [ "#FAFAFA", "#FEFEFE" ]
+	"valeurs" : [ "#FF00FF", "#AAFFBB", "#123456" ]
 }
